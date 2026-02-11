@@ -19,8 +19,11 @@ if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 NHTSA_API_URL = os.getenv("NHTSA_API_URL", "https://vpic.nhtsa.dot.gov/api/vehicles")
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
-
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://thirty-sixty-ninety.onrender.com",
+    "https://three0-60-90-trial-1.onrender.com",
+]
 # ---------------------------------------------------------------------------
 # DATABASE ENGINE + SESSION
 # ---------------------------------------------------------------------------
