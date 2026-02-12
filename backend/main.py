@@ -634,12 +634,12 @@ def get_curve(
 
 
 @app.get("/api/vehicles/insights", response_model=List[VehicleInsight])
+@app.get("/api/vehicles/insights", response_model=List[VehicleInsight])
 def get_insights(
     status: str = Query("active"),
     db: Session = Depends(get_db),
     dealership_id: int = Depends(get_dealership_id),
 ):
-    """Lightweight list view with p30/p60/p90 and 1-line action."""
     vehicles = db.query(Vehicle).filter(
         Vehicle.dealership_id == dealership_id,
         Vehicle.status == status,
@@ -647,11 +647,9 @@ def get_insights(
 
     insights = []
     for v in vehicles:
-        # Refresh days
         if v.date_acquired and v.status == VehicleStatus.active:
             v.days_in_inventory = (date.today() - v.date_acquired).days
 
-        # Get latest report
         report = db.query(AnalysisReport).filter(
             AnalysisReport.vehicle_id == v.id,
         ).order_by(AnalysisReport.computed_at.desc()).first()
@@ -659,29 +657,30 @@ def get_insights(
         one_line = None
         if report and report.action_plan:
             actions = report.action_plan
-            one_line = actions[0] if isinstance(actions, list) and actions else None
+            if isinstance(actions, list) and len(actions) > 0:
+                one_line = actions[0]
 
-        insights.append(VehicleInsight(
-            vehicle_id=v.id,
-            vin=v.vin,
-            year=v.year,
-            make=v.make,
-            model=v.model,
-            trim=v.trim,
-            status=v.status,
-            days_in_inventory=v.days_in_inventory or 0,
-            list_price=v.list_price or 0,
-            acquisition_cost=v.acquisition_cost or 0,
-            recon_cost=v.recon_cost or 0,
-            p30=report.p30 if report else None,
-            p60=report.p60 if report else None,
-            p90=report.p90 if report else None,
-            aging_class=report.aging_class if report else None,
-            daily_carry_cost=report.daily_carry_cost if report else None,
-            inflection_day=report.inflection_day if report else None,
-            price_action=report.price_action if report else None,
-            one_line_action=one_line,
-        ))
+        insights.append({
+            "vehicle_id": v.id,
+            "vin": v.vin,
+            "year": v.year,
+            "make": v.make,
+            "model": v.model,
+            "trim": v.trim,
+            "status": v.status,
+            "days_in_inventory": v.days_in_inventory or 0,
+            "list_price": v.list_price or 0,
+            "acquisition_cost": v.acquisition_cost or 0,
+            "recon_cost": v.recon_cost or 0,
+            "p30": report.p30 if report else None,
+            "p60": report.p60 if report else None,
+            "p90": report.p90 if report else None,
+            "aging_class": report.aging_class if report else None,
+            "daily_carry_cost": report.daily_carry_cost if report else None,
+            "inflection_day": report.inflection_day if report else None,
+            "price_action": report.price_action if report else None,
+            "one_line_action": one_line,
+        })
 
     db.commit()
     return insights
