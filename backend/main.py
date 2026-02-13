@@ -630,9 +630,7 @@ def get_curve(
     curve = report.daily_curve[:days]
     return {"vehicle_id": vehicle_id, "days": len(curve), "curve": curve}
 
-
-@app.get("/api/vehicles/insights", response_model=List[VehicleInsight])
-@app.get("/api/vehicles/insights", response_model=List[VehicleInsight])
+@app.get("/api/inventory/insights")
 def get_insights(
     status: str = Query("active"),
     db: Session = Depends(get_db),
