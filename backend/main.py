@@ -214,8 +214,7 @@ async def add_vehicle_from_vin(
 
     return v
 
-
-@app.get("/api/vehicles", response_model=List[VehicleOut])
+@app.get("/api/vehicles")
 def list_vehicles(
     status: Optional[str] = Query(None),
     db: Session = Depends(get_db),
@@ -234,8 +233,7 @@ def list_vehicles(
 
     return vehicles
 
-
-@app.get("/api/vehicles/{vehicle_id}", response_model=VehicleOut)
+@app.get("/api/vehicles/{vehicle_id}")
 def get_vehicle(
     vehicle_id: int,
     db: Session = Depends(get_db),
