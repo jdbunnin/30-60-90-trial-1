@@ -81,7 +81,7 @@ def get_dealership_id(x_dealership_id: int = Header(default=1)) -> int:
 # ---------------------------------------------------------------------------
 # HEALTH
 # ---------------------------------------------------------------------------
-@app.get("/api/vehicle/{vehicle_id}", response_model=VehicleOut)
+@app.get("/api/vehicle/{vehicle_id}", )
 def health():
     return {"status": "ok", "app": "30-60-90", "version": "1.0.0"}
 
@@ -89,7 +89,7 @@ def health():
 # ---------------------------------------------------------------------------
 # DEALERSHIP ROUTES
 # ---------------------------------------------------------------------------
-@app.post("/api/dealerships", response_model=DealershipOut)
+@app.post("/api/dealerships", )
 def create_dealership(payload: DealershipCreate, db: Session = Depends(get_db)):
     d = Dealership(name=payload.name, timezone=payload.timezone)
     db.add(d)
@@ -110,7 +110,7 @@ def create_dealership(payload: DealershipCreate, db: Session = Depends(get_db)):
     return d
 
 
-@app.get("/api/dealerships", response_model=List[DealershipOut])
+@app.get("/api/dealerships", )
 def list_dealerships(db: Session = Depends(get_db)):
     return db.query(Dealership).all()
 
@@ -118,7 +118,7 @@ def list_dealerships(db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 # USER ROUTES
 # ---------------------------------------------------------------------------
-@app.post("/api/users", response_model=UserOut)
+@app.post("/api/users", )
 def create_user(
     payload: UserCreate,
     db: Session = Depends(get_db),
@@ -162,7 +162,7 @@ async def decode_vin(vin: str) -> dict:
 # ---------------------------------------------------------------------------
 # VEHICLE ROUTES
 # ---------------------------------------------------------------------------
-@app.post("/api/vehicles/from-vin", response_model=VehicleOut)
+@app.post("/api/vehicles/from-vin", )
 async def add_vehicle_from_vin(
     payload: VinAddRequest,
     db: Session = Depends(get_db),
@@ -252,7 +252,7 @@ def get_vehicle(
     return v
 
 
-@app.put("/api/vehicles/{vehicle_id}", response_model=VehicleOut)
+@app.put("/api/vehicles/{vehicle_id}", )
 def update_vehicle(
     vehicle_id: int,
     payload: VehicleUpdate,
@@ -309,7 +309,7 @@ def update_vehicle(
 # ---------------------------------------------------------------------------
 # SIGNALS ROUTES
 # ---------------------------------------------------------------------------
-@app.put("/api/vehicles/{vehicle_id}/signals", response_model=SignalsOut)
+@app.put("/api/vehicles/{vehicle_id}/signals", )
 def update_signals(
     vehicle_id: int,
     payload: SignalsUpdate,
@@ -337,7 +337,7 @@ def update_signals(
     return sig
 
 
-@app.get("/api/vehicles/{vehicle_id}/signals", response_model=SignalsOut)
+@app.get("/api/vehicles/{vehicle_id}/signals", )
 def get_signals(
     vehicle_id: int,
     db: Session = Depends(get_db),
@@ -399,7 +399,7 @@ def _generate_mock_comps(vehicle: Vehicle) -> List[dict]:
     return comps
 
 
-@app.post("/api/vehicles/{vehicle_id}/comps/refresh", response_model=MessageResponse)
+@app.post("/api/vehicles/{vehicle_id}/comps/refresh", )
 def refresh_comps(
     vehicle_id: int,
     db: Session = Depends(get_db),
@@ -444,7 +444,7 @@ def refresh_comps(
     return MessageResponse(message=f"Refreshed {len(mock_comps)} automated comps.", detail={"count": len(mock_comps)})
 
 
-@app.post("/api/vehicles/{vehicle_id}/comps/manual", response_model=CompOut)
+@app.post("/api/vehicles/{vehicle_id}/comps/manual", )
 def add_manual_comp(
     vehicle_id: int,
     payload: CompManualAdd,
@@ -477,7 +477,7 @@ def add_manual_comp(
     return c
 
 
-@app.post("/api/vehicles/{vehicle_id}/comps/upload", response_model=MessageResponse)
+@app.post("/api/vehicles/{vehicle_id}/comps/upload", )
 async def upload_comps(
     vehicle_id: int,
     file: UploadFile = File(...),
@@ -522,7 +522,7 @@ async def upload_comps(
     return MessageResponse(message=f"Uploaded {count} manual comps from CSV.", detail={"count": count})
 
 
-@app.get("/api/vehicles/{vehicle_id}/comps", response_model=List[CompOut])
+@app.get("/api/vehicles/{vehicle_id}/comps", )
 def list_comps(
     vehicle_id: int,
     source: Optional[str] = Query(None, description="auto|manual|all"),
@@ -540,7 +540,7 @@ def list_comps(
     return q.order_by(Comp.found_at.desc()).all()
 
 
-@app.get("/api/vehicles/{vehicle_id}/comps/summary", response_model=CompSummaryOut)
+@app.get("/api/vehicles/{vehicle_id}/comps/summary", )
 def get_comp_summary(
     vehicle_id: int,
     db: Session = Depends(get_db),
@@ -583,7 +583,7 @@ def _rebuild_comp_summary(vehicle_id: int, db: Session):
 # ANALYSIS ROUTES
 # ---------------------------------------------------------------------------
 
-@app.post("/api/vehicles/{vehicle_id}/analyze", response_model=AnalysisReportOut)
+@app.post("/api/vehicles/{vehicle_id}/analyze", )
 def analyze_vehicle(
     vehicle_id: int,
     db: Session = Depends(get_db),
@@ -683,7 +683,7 @@ def get_insights(
 # FLOORPLAN ALARM ROUTES
 # ---------------------------------------------------------------------------
 
-@app.post("/api/alarms/run", response_model=AlarmOut)
+@app.post("/api/alarms/run", )
 def run_alarm(
     db: Session = Depends(get_db),
     dealership_id: int = Depends(get_dealership_id),
@@ -737,7 +737,7 @@ def run_alarm(
     return alarm
 
 
-@app.get("/api/alarms/latest", response_model=AlarmOut)
+@app.get("/api/alarms/latest", )
 def get_latest_alarm(
     db: Session = Depends(get_db),
     dealership_id: int = Depends(get_dealership_id),
@@ -751,7 +751,7 @@ def get_latest_alarm(
     return alarm
 
 
-@app.get("/api/alarms/history", response_model=List[AlarmOut])
+@app.get("/api/alarms/history", )
 def get_alarm_history(
     limit: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
@@ -762,7 +762,7 @@ def get_alarm_history(
     ).order_by(FloorplanAlarm.created_at.desc()).limit(limit).all()
 
 
-@app.put("/api/alarms/config", response_model=AlarmConfigOut)
+@app.put("/api/alarms/config", )
 def update_alarm_config(
     payload: AlarmConfigUpdate,
     db: Session = Depends(get_db),
@@ -784,7 +784,7 @@ def update_alarm_config(
     return config
 
 
-@app.get("/api/alarms/config", response_model=AlarmConfigOut)
+@app.get("/api/alarms/config", )
 def get_alarm_config(
     db: Session = Depends(get_db),
     dealership_id: int = Depends(get_dealership_id),
@@ -799,7 +799,7 @@ def get_alarm_config(
 # PRICING WATERFALL ROUTES
 # ---------------------------------------------------------------------------
 
-@app.get("/api/settings/pricing-waterfall", response_model=WaterfallSettingsOut)
+@app.get("/api/settings/pricing-waterfall", )
 def get_waterfall_settings(
     db: Session = Depends(get_db),
     dealership_id: int = Depends(get_dealership_id),
@@ -812,7 +812,7 @@ def get_waterfall_settings(
     return settings
 
 
-@app.put("/api/settings/pricing-waterfall", response_model=WaterfallSettingsOut)
+@app.put("/api/settings/pricing-waterfall", )
 def update_waterfall_settings(
     payload: WaterfallSettingsUpdate,
     db: Session = Depends(get_db),
@@ -844,7 +844,7 @@ def update_waterfall_settings(
     return settings
 
 
-@app.post("/api/vehicles/{vehicle_id}/pricing-waterfall/plan", response_model=WaterfallPlanOut)
+@app.post("/api/vehicles/{vehicle_id}/pricing-waterfall/plan", )
 def generate_waterfall_plan(
     vehicle_id: int,
     db: Session = Depends(get_db),
@@ -880,7 +880,7 @@ def generate_waterfall_plan(
     )
 
 
-@app.post("/api/vehicles/{vehicle_id}/pricing-waterfall/apply", response_model=VehicleOut)
+@app.post("/api/vehicles/{vehicle_id}/pricing-waterfall/apply", )
 def apply_waterfall_step(
     vehicle_id: int,
     step: int = Query(1, ge=1, description="Which step number to apply"),
@@ -943,7 +943,7 @@ def apply_waterfall_step(
 # PRICE EVENT LOG ROUTES
 # ---------------------------------------------------------------------------
 
-@app.get("/api/vehicles/{vehicle_id}/price-events", response_model=List[PriceEventOut])
+@app.get("/api/vehicles/{vehicle_id}/price-events", )
 def get_price_events(
     vehicle_id: int,
     db: Session = Depends(get_db),
@@ -959,7 +959,7 @@ def get_price_events(
     return events
 
 
-@app.get("/api/price-events", response_model=List[PriceEventOut])
+@app.get("/api/price-events", )
 def get_all_price_events(
     limit: int = Query(50, ge=1, le=500),
     db: Session = Depends(get_db),
@@ -974,7 +974,7 @@ def get_all_price_events(
 # BATCH OPERATIONS
 # ---------------------------------------------------------------------------
 
-@app.post("/api/vehicles/analyze-all", response_model=MessageResponse)
+@app.post("/api/vehicles/analyze-all", )
 def analyze_all_vehicles(
     db: Session = Depends(get_db),
     dealership_id: int = Depends(get_dealership_id),
@@ -1005,7 +1005,7 @@ def analyze_all_vehicles(
     )
 
 
-@app.post("/api/vehicles/refresh-all-comps", response_model=MessageResponse)
+@app.post("/api/vehicles/refresh-all-comps", )
 def refresh_all_comps(
     db: Session = Depends(get_db),
     dealership_id: int = Depends(get_dealership_id),
