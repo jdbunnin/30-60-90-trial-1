@@ -268,7 +268,7 @@ export default function App() {
     try {
       const [vRes, iRes] = await Promise.all([
         API.get('/api/vehicles?status=active'),
-        API.get('/api/vehicles/insights?status=active'),
+        API.get('/api/inventory/insights?status=active'),
       ])
       setVehicles(vRes.data)
       setInsights(iRes.data)
