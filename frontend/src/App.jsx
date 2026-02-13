@@ -623,8 +623,8 @@ function AddVehicle({ onAdded }) {
 
       // Auto-refresh comps and analyze
       try {
-        await API.post(`/api/vehicles/${res.data.id}/comps/refresh`)
-        await API.post(`/api/vehicles/${res.data.id}/analyze`)
+        await API.post(`/api/vehicle/${res.data.id}/comps/refresh`)
+        await API.post(`/api/vehicle/${{res.data.id}/analyze`)
       } catch (e) {
         // Non-fatal
       }
