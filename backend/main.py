@@ -81,7 +81,7 @@ def get_dealership_id(x_dealership_id: int = Header(default=1)) -> int:
 # ---------------------------------------------------------------------------
 # HEALTH
 # ---------------------------------------------------------------------------
-@app.get("/api/vehicles/{vehicle_id}", response_model=VehicleOut)
+@app.get("/api/vehicle/{vehicle_id}", response_model=VehicleOut)
 def health():
     return {"status": "ok", "app": "30-60-90", "version": "1.0.0"}
 
@@ -232,8 +232,7 @@ def list_vehicles(
     db.commit()
 
     return vehicles
-
-@app.get("/api/vehicles/{vehicle_id}")
+@app.get("/api/vehicle/{vehicle_id}")
 def get_vehicle(
     vehicle_id: int,
     db: Session = Depends(get_db),
