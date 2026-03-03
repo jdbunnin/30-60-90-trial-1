@@ -81,7 +81,7 @@ def get_dealership_id(x_dealership_id: int = Header(default=1)) -> int:
 # ---------------------------------------------------------------------------
 # HEALTH
 # ---------------------------------------------------------------------------
-@app.get("/api/vehicle/{vehicle_id}", )
+@app.get("/api/health")
 def health():
     return {"status": "ok", "app": "30-60-90", "version": "1.0.0"}
 
