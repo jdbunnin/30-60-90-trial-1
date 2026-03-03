@@ -232,7 +232,7 @@ def list_vehicles(
     db.commit()
 
     return vehicles
-@app.get("/api/vehicle/{vehicle_id}")
+@app.get("/api/vehicles/{vehicle_id}")
 def get_vehicle(
     vehicle_id: int,
     db: Session = Depends(get_db),
